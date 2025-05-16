@@ -4,8 +4,9 @@ import { useChatStore } from "../store/useChatStore";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { Users } from "lucide-react";
 import SearchModal from "./SeachContactModal";
+
 const Sidebar = () => {
-    const { getContacts, contacts, selectedUser, setSelectedUser, isContactsLoading } = useChatStore();
+    const { getContacts, contacts, selectedContact, setSelectedContact, isContactsLoading } = useChatStore();
     const [isModalOpen, setIsModalOpen] = useState(false);
     useEffect(() => {
         getContacts();
@@ -30,16 +31,16 @@ const Sidebar = () => {
             <div className="overflow-y-auto w-full py-3">
                 {contacts.map((contact) => {
                     const user = contact.user;
-
+                    const roomId = contact.personalRoomId;
                     if (!user) return null;
                     return (
                         <button
                             key={user._id}
-                            onClick={() => setSelectedUser(user)}
+                            onMouseDown={() => setSelectedContact(contact)}
                             className={`
               w-full p-3 flex items-center gap-3
               hover:bg-base-300 transition-colors
-              ${selectedUser?._id === user._id ? "bg-base-300 ring-1 ring-base-300" : ""}
+              ${selectedContact?._id === roomId?._id ? "bg-base-300 ring-1 ring-base-300" : ""}
             `}
                         >
                             <div className="relative mx-auto lg:mx-0">

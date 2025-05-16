@@ -2,12 +2,11 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import {axiosInstance} from '../lib/axios';
 
-export const useChatStore = create((set) => ({
+export const useChatStore = create((set,get) => ({
+    db:null,
     messages:[],
-    users:[],
     contacts:[],
-    selectedUser:null,
-    isUserLoading:false,
+    selectedContact:null,
     isMessageLoading:false,
     isContactsLoading:false,
 
@@ -15,6 +14,7 @@ export const useChatStore = create((set) => ({
         set({isContactsLoading:true})
         try {
             const response = await axiosInstance.get('/user/contacts')
+            
             set({contacts:response.data})
         } catch (error) {
             toast.error(error.response?.data?.message || "Something went wrong")
@@ -23,24 +23,16 @@ export const useChatStore = create((set) => ({
             set({isContactsLoading:false})
         }
     },
-    getUsers: async () => {
-        set({isUserLoading:true})
-        try {
-            const response = await axiosInstance.get('/messages/users')
-            set({users:response.data})
-        } catch (error) {
-            toast.error(error.response?.data?.message || "Something went wrong")
-            console.error(error);
-        } finally {
-            set({isUserLoading:false})
-        }
-    },
 
-    getMessages: async (userId) => {
+    getMessages: async (roomId) => {
         set({isMessageLoading:true});
         try {
-            const response = await axiosInstance.get(`/messages/${userId}`)
-            set({messages:response.data})
+             const response = await axiosInstance.get(`/message/${roomId}`)
+             set({messages:response.data})
+             console.log("chats:"+response.data)
+            //  const db=openDB();
+            //  (await db).exec(`SELECT * FROM SecureChat WHERE roomId='${roomId}'`)
+            
         } catch (error) {
             toast.error(error.response?.data?.message || "Something went wrong")
             console.error(error);
@@ -48,8 +40,17 @@ export const useChatStore = create((set) => ({
             set({isMessageLoading:false});
         }
     },
+    sendMessage: async (msg,roomId) => {
+        const {messages } = get();
+        try {
+          const res = await axiosInstance.post(`/message/send/${roomId}`, msg);
+          set({ messages: [...messages, res.data] });
+        } catch (error) {
+          toast.error(error.response.data.message);
+        }
+      },
 
-    setSelectedUser: (user) => {
-        set({selectedUser:user})
+    setSelectedContact: (contact) => {
+        set({selectedContact:contact})
     },
 }))

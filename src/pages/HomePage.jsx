@@ -5,7 +5,7 @@ import { useChatStore } from "../store/useChatStore.js"
 
 const HomePage = () => {
 
-  const { selectedUser } = useChatStore();
+  const { selectedContact } = useChatStore();
 
 
   return (
@@ -15,7 +15,7 @@ const HomePage = () => {
           <div className="flex h-full rounded-lg overflow-hidden">
             <Sidebar />
 
-            {!selectedUser ? <NoChatSelected /> : <ChatContainer />}
+            {!selectedContact ? <NoChatSelected /> : <ChatContainer />}
           </div>
         </div>
       </div>
